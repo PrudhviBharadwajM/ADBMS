@@ -14,7 +14,7 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Ssn" class="control-label"></label>
-                <input asp-for="Ssn" class="form-control" />
+                <input asp-for="Ssn" minlength =9 maxlength=9 class="form-control" />
                 <span asp-validation-for="Ssn" class="text-danger"></span>
             </div>
             <div class="form-group">
