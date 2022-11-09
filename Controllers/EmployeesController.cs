@@ -128,9 +128,9 @@ namespace ADBMS.Controllers
                     }
                 }
 
-                catch(Exception)
+                catch(Exception ex)
                 {
-                    
+                    Console.WriteLine(ex.Message);
                 }
 
             }
