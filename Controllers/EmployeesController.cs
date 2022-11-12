@@ -21,7 +21,7 @@ namespace ADBMS.Controllers
         // GET: Employees
         public async Task<IActionResult> Index()
         {
-              return View(await db.Employees.ToListAsync());
+            return View(await db.Employees.ToListAsync());
         }
 
         // GET: Employees/Details/5
@@ -61,6 +61,9 @@ namespace ADBMS.Controllers
                 case "8":
                     employee.DeptNum = "Other";
                     break;
+                case "9":
+                    employee.DeptNum = "Infra";
+                    break;
             }
 
             if (employee == null)
@@ -78,9 +81,6 @@ namespace ADBMS.Controllers
             return View();
         }
 
-        // POST: Employees/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Ssn,FirstName,MiddleName,LastName,Dob,EmpAddress,DeptNum")] Employee employee)
@@ -111,6 +111,9 @@ namespace ADBMS.Controllers
                 case "Other":
                     employee.DeptNum = 8.ToString();
                     break;
+                case "Infra":
+                    employee.DeptNum = 9.ToString();
+                    break;
             }
             var checkSSN = db.Employees.Where(x => x.Ssn == employee.Ssn).ToList();
 
@@ -119,7 +122,7 @@ namespace ADBMS.Controllers
             {
                 try
                 {
-                    if (checkSSN is null)
+                    if (checkSSN is null || checkSSN.Count is 0)
                     {
                         db.Add(employee);
                         await db.SaveChangesAsync();
@@ -128,7 +131,7 @@ namespace ADBMS.Controllers
                     }
                 }
 
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     Console.WriteLine(ex.Message);
                 }
@@ -173,6 +176,9 @@ namespace ADBMS.Controllers
                 case "8":
                     employee.DeptNum = "Other";
                     break;
+                case "9":
+                    employee.DeptNum = "Infra";
+                    break;
             }
             if (employee == null)
             {
@@ -182,9 +188,6 @@ namespace ADBMS.Controllers
             return View(employee);
         }
 
-        // POST: Employees/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Ssn,FirstName,MiddleName,LastName,Dob,EmpAddress,DeptNum")] Employee employee)
@@ -219,6 +222,9 @@ namespace ADBMS.Controllers
                     break;
                 case "Other":
                     employee.DeptNum = 8.ToString();
+                    break;
+                case "Infra":
+                    employee.DeptNum = 9.ToString();
                     break;
             }
 
@@ -277,14 +283,62 @@ namespace ADBMS.Controllers
             {
                 db.Employees.Remove(employee);
             }
-            
+
             await db.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool EmployeeExists(int id)
         {
-          return db.Employees.Any(e => e.Ssn == id);
+            return db.Employees.Any(e => e.Ssn == id);
+        }
+
+        // Listing departments!
+        public async Task<IActionResult> ListDepartments()
+        {
+            return View(await db.Departments.ToListAsync());
+        }
+
+        // GET: Department/Delete/5
+        public async Task<IActionResult> DeleteDepartment(int? id)
+        {
+            if (id == null || db.Departments == null)
+            {
+                return NotFound();
+            }
+
+            var department = await db.Departments
+                .FirstOrDefaultAsync(m => m.DeptNum == id);
+            if (department == null)
+            {
+                return NotFound();
+            }
+
+            return View(department);
+        }
+
+        [HttpPost, ActionName("DeleteDepartment")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteDepartments(int id)
+        {
+            if (db.Departments == null)
+            {
+                return Problem("Entity set 'HRMSContext.Departments' is null.");
+            }
+            var departments = await db.Departments.FindAsync(id);
+            if (departments != null)
+            {
+                var employeeList = db.Employees.Where(x => x.DeptNum == departments.DeptNum.ToString()).Select(x => x).ToList();
+
+                db.Departments.Remove(departments);
+                foreach (var item in employeeList)
+                {
+                    db.Employees.Remove(item);
+                }
+            }
+
+            await db.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
     }
 }

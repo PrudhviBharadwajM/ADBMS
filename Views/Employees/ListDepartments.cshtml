@@ -1,0 +1,44 @@
+﻿@model IEnumerable<ADBMS.Models.Department>
+
+@{
+    ViewData["Title"] = "ListDepartments";
+}
+
+<h1>List Departments</h1>
+
+<style>
+    a:link, a:visited {
+        color: white;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+</style>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.DeptName)
+            </th>
+            <th>
+                Delete Department
+            </th>
+
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DeptName)
+                </td>
+                <td>
+                    <button class="btn btn-danger"><a asp-action="DeleteDepartment" asp-route-id="@item.DeptNum">Delete Department</a></button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+

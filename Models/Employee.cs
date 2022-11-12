@@ -27,6 +27,6 @@ namespace ADBMS.Models
         public string EmpAddress { get; set; } = null!;
         [StringLength(30)]
         [Unicode(false)]
-        public string? DeptNum { get; set; }
+        public string DeptNum { get; set; }
     }
 }
